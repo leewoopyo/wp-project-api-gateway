@@ -1,0 +1,48 @@
+server:
+    port: 19000
+
+logging:
+    level: 
+        com.woopi.project.* : debug    # 패키지별 log레벨 설정
+
+spring:
+    application:
+        name: wp-project-api-gateway
+    devtools:
+        livereload:
+            enabled: true
+        restart:
+            enabled: true
+    cloud:
+        gateway:
+            default-filters:   
+                - name: GlobalFilter    #GlobalFilter.java의 기본 필터 설정
+                  args:
+                    baseMessage: ApiGateway Service Global Filter Test
+                    preLogger: true
+                    postLogger: true
+            routes:
+                - id : wp-project-verification-service
+                  uri: http://localhost:19001/
+                  predicates:
+                    - Path=/verification/**
+                  filters:
+                    - CustomFilter  # first-service에만 해당하는 필터 설정
+                    - AddRequestHeader=first_request_header_key_1, first_request_header_value_yml_1     # AddRequestHeader로 requestHeader값 설정
+                    - AddRequestHeader=first_request_header_key_2, first_request_header_value_yml_2
+                    - AddResponseHeader=first_response_header_key_1, first_response_header_value_yml_1  # AddResponseHeader로 responseHeader값 설정
+                    - AddResponseHeader=first_response_header_key_2, first_response_header_value_yml_2
+
+eureka:
+    client:
+        register-with-eureka: false
+        fetch-registry: false
+        service-url:
+            # eureka-discovery-server은 브릿지에 연결된 컨테이너 이름
+            # [참고] https://woopi1087.tistory.com/88
+            defaultZone: http://localhost:18761/eureka
+
+    
+        
+        
+
